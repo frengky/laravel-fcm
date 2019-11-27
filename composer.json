@@ -1,0 +1,41 @@
+{
+    "name": "frengky/laravel-fcm",
+    "description": "Laravel FCM",
+    "keywords": ["laravel", "fcm", "notification", "firebase"],
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/frengky/laravel-fcm",
+    "authors": [
+        {
+            "name": "Frengky",
+            "email": "frengky.lim@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "laravel/framework": "6.*",
+        "kreait/firebase-php": "^4.35"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8",
+        "mockery/mockery": "^1.3",
+        "orchestra/testbench": "^4.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Frengky\\Fcm\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Frengky\\Fcm\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+              "Frengky\\Fcm\\ServiceProvider"
+            ]
+        }
+    }
+}
