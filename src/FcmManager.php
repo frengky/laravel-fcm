@@ -2,10 +2,8 @@
 
 namespace Frengky\Fcm;
 
-use Frengky\Fcm\FcmPlatform;
 use Frengky\Fcm\Messaging\Contracts\Message;
 use Frengky\Fcm\Messaging\AndroidMessage;
-use Frengky\Fcm\Messaging\AndroidMulticastMessage;
 use Frengky\Fcm\Messaging\ApnsMessage;
 use Frengky\Fcm\Messaging\WebPushMessage;
 use Frengky\Fcm\Messaging\UniversalMessage;
@@ -32,32 +30,24 @@ class FcmManager
     }
 
     /**
-     * Create a message
-     * 
-     * @param int $platform
-     * @return \Frengky\Fcm\Messaging\Contracts\Message
-     */
-    public function createMessage(int $platform = FcmPlatform::ALL): Message {
-        if ($platform == FcmPlatform::ANDROID) {
-            return new AndroidMessage($this->android['ttl'], $this->android['priority']);
-        } else if ($platform == FcmPlatform::APNS) {
-            return new ApnsMessage($this->apns['headers']);
-        } else if ($platform == FcmPlatform::WEBPUSH) {
-            return new WebPushMessage();
-        } else {
-            return new UniversalMessage($this->android['ttl'], $this->android['priority'], $this->apns['headers']);
-        }
-    }
-
-    /**
      * Send a cloud message
      *
      * @param \Kreait\Firebase\Messaging\CloudMessage $message
      * @return array
      * @throws \Kreait\Firebase\Exception\Messaging\NotFound|\Exception
      */
-    public function send(CloudMessage $message): array {
+    private function send(CloudMessage $message): array {
         return $this->firebase->getMessaging()->send($message);
+    }
+
+    /**
+     * Send bulk cloud message
+     * 
+     * @param array $messages
+     * @return \Kreait\Firebase\Messaging\MulticastSendReport 
+     */
+    public function sendAll(array $messages): MulticastSendReport {
+        return $this->firebase->getMessaging()->sendAll($messages);
     }
 
     /**
@@ -69,17 +59,17 @@ class FcmManager
      * @throws \Kreait\Firebase\Exception\Messaging\NotFound|\Exception
      */
     public function sendToDevice(string $token, Message $message): array {
-        return $this->send($message->toCloudMessage('token', $token));
+        return $this->send($message->toCloudMessage()->withChangedTarget('token', $token));
     }
 
     /**
      * Send multicast message
      * 
      * @param array $tokens
-     * @param \Frengky\Fcm\Messaging\AndroidMulticastMessage $message
+     * @param \Frengky\Fcm\Messaging\AndroidMessage $message
      * @return \Kreait\Firebase\Messaging\MulticastSendReport
      */
-    public function sendMulticast(array $tokens, AndroidMulticastMessage $message): MulticastSendReport {
+    public function sendMulticast(array $tokens, AndroidMessage $message): MulticastSendReport {
         return $this->firebase->getMessaging()->sendMulticast($message->toCloudMessage(), $tokens);
     }
 
@@ -93,7 +83,7 @@ class FcmManager
      */
     public function sendToTopic(string $topic, Message $message): array {
         $type = preg_match('/[^a-zA-Z0-9\s]+/', $topic) ? 'condition' : 'topic';
-        return $this->send($message->toCloudMessage($type, $topic));
+        return $this->send($message->toCloudMessage()->withChangedTarget($type, $topic));
     }
 
     /**

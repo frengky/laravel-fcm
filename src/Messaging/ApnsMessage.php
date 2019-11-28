@@ -17,14 +17,12 @@ class ApnsMessage extends BaseMessage implements Message
     }
 
     /**
-     * Build the CloudMessage instance
+     * Get as a CloudMessage instance
      *
-     * @param string $type
-     * @param string $value
      * @return \Kreait\Firebase\Messaging\CloudMessage
      */
-    public function toCloudMessage(string $type, string $value): CloudMessage {
-        return CloudMessage::withTarget($type, $value)
+    public function toCloudMessage(): CloudMessage {
+        return CloudMessage::new()
             ->withNotification(Notification::create($this->title, $this->body))
             ->withData($this->data)
             ->withApnsConfig($this->getApnsConfig());

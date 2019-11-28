@@ -4,7 +4,6 @@ namespace Frengky\Fcm\Tests;
 
 use Frengky\Fcm\Facades\Fcm;
 use Frengky\Fcm\Messaging\AndroidMessage;
-use Frengky\Fcm\Messaging\AndroidMulticastMessage;
 use Illuminate\Support\Facades\Log;
 
 final class FcmNotificationTests extends TestCase
@@ -31,7 +30,7 @@ final class FcmNotificationTests extends TestCase
         Log::debug('test_send_multicast_notifications in the next 5 secs');
         sleep(5);
 
-        $message = (new AndroidMulticastMessage('3600s', 'high'))
+        $message = (new AndroidMessage('3600s', 'high'))
             ->setTitle('Multicast Message')
             ->setBody('This is test of multicast message')
             ->setData([
